@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -14,7 +14,7 @@ struct Node<T> {
     next: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Node<T> {
+impl<T:Ord+Clone> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:Ord+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:Ord+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -72,11 +72,40 @@ impl<T> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut result = Self::new();
+        let mut a=list_a.start;
+        let mut b=list_b.start;
+        while a.is_some()&&b.is_some(){
+            let a_val=unsafe {&a.unwrap().as_ptr().as_ref().unwrap().val};
+            let b_val=unsafe {&b.unwrap().as_ptr().as_ref().unwrap().val};
+            if *a_val<*b_val{
+                result.add(a_val.clone());
+            }else{
+                result.add(b_val.clone());
+            }
+
+            if *a_val<*b_val{
+                a=unsafe {a.unwrap().as_ptr().as_ref().unwrap().next};
+            }else{
+                b=unsafe {
+                    b.unwrap().as_ptr().as_ref().unwrap().next
+                }
+            }
         }
+        while a.is_some(){
+            let a_val=unsafe {&a.unwrap().as_ptr().as_ref().unwrap().val};
+
+            result.add(a_val.clone());
+            a=unsafe {a.unwrap().as_ptr().as_ref().unwrap().next};
+        }
+        while b.is_some(){
+            let b_val=unsafe {&b.unwrap().as_ptr().as_ref().unwrap().val};
+            result.add(b_val.clone());
+            b=unsafe {
+                b.unwrap().as_ptr().as_ref().unwrap().next
+            }
+        }
+		result
 	}
 }
 
