@@ -93,7 +93,7 @@ mod test_undirected_graph {
             (&String::from("c"), &String::from("a"), 7),
             (&String::from("a"), &String::from("c"), 7),
             (&String::from("b"), &String::from("c"), 10),
-            (&String::from("c"), &String::from("b"), 9),
+            (&String::from("c"), &String::from("b"), 10),
         ];
         for edge in expected_edges.iter() {
             assert_eq!(graph.edges().contains(edge), true);
