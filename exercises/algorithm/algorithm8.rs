@@ -2,14 +2,16 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
+
+
+use std::mem::swap;
 
 #[derive(Debug)]
 pub struct Queue<T> {
     elements: Vec<T>,
 }
 
-impl<T> Queue<T> {
+impl<T:Clone> Queue<T> {
     pub fn new() -> Queue<T> {
         Queue {
             elements: Vec::new(),
@@ -44,7 +46,7 @@ impl<T> Queue<T> {
     }
 }
 
-impl<T> Default for Queue<T> {
+impl<T:Clone> Default for Queue<T> {
     fn default() -> Queue<T> {
         Queue {
             elements: Vec::new(),
@@ -58,7 +60,7 @@ pub struct myStack<T>
 	q1:Queue<T>,
 	q2:Queue<T>
 }
-impl<T> myStack<T> {
+impl<T:Clone> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
@@ -68,14 +70,23 @@ impl<T> myStack<T> {
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        self.q2.enqueue(elem);
+        while let Ok(v)=self.q1.peek(){
+            self.q2.enqueue(v.clone());
+            self.q1.dequeue();
+        }
+        swap(&mut self.q1, &mut self.q2);
     }
     pub fn pop(&mut self) -> Result<T, &str> {
-        //TODO
-		Err("Stack is empty")
+        if self.is_empty(){
+		return Err("Stack is empty");
+        }
+        self.q1.dequeue()
+
     }
     pub fn is_empty(&self) -> bool {
 		//TODO
-        true
+        self.q1.is_empty()&&self.q2.is_empty()
     }
 }
 
