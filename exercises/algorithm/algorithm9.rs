@@ -3,9 +3,9 @@
 	This question requires you to implement a binary heap function
 */
 
-
 use std::cmp::Ord;
 use std::default::Default;
+use std::result;
 
 
 pub struct Heap<T>
@@ -83,59 +83,47 @@ where
             left
         }
     }
-    fn pop(&mut self) -> Option<T> {
-        if self.count == 0 {
-            return None;
-        }
-        let result = self.items[1].clone(); // 堆顶元素在索引1
-        if self.count == 1 {
-            // 如果堆中只剩下一个元素，直接移除并返回
-            self.count -= 1;
-            self.items.pop();
-        } else {
-            // 将堆中的最后一个元素移动到根位置
-            self.items[1] = self.items[self.count - 1].clone();
-            self.count -= 1;
-            // 移除原来的最后一个元素
-            self.items.pop();
-            // 对新的根元素执行下沉操作以维护堆的性质
-            self.sift_down(1);
-        }
-        Some(result)
-    }
-    
-    fn sift_down(&mut self, mut idx: usize) {
-        let mut smallest = idx;
-        let mut left = self.left_child_idx(idx);
-        let mut right = self.right_child_idx(idx);
-    
-        loop {
-            if left < self.count {
-                if right < self.count {
-                    // 左右子节点都存在
-                    if (self.comparator)(&self.items[left], &self.items[right]) {
-                        smallest = right;
-                    } else {
-                        smallest = left;
-                    }
-                } else {
-                    // 只有左子节点存在
-                    smallest = left;
+    fn sift_down(&mut self/* ,mut idx: usize*/){
+        //while self.children_present(idx){
+            // let smallest_child=self.smallest_child_idx(idx);
+            // if (self.comparator)(&self.items[smallest_child],&self.items[idx]){
+            //     self.items.swap(idx, smallest_child);
+            //     idx=smallest_child;
+            // }else{
+            //     break;
+            // }
+            //}
+            let mut i =1 as usize;
+            self.items[1]=self.items[self.count].clone();
+            self.count-=1;
+            while 2*i<=self.count{
+                let mut left = self.left_child_idx(i);//左儿子
+                if left<self.count.clone()&&(self.comparator)(&self.items[left+1],&self.items[left]){
+                    left+=1;
                 }
-            } else {
-                break; // 没有子节点，结束下沉
+                if (self.comparator)(&self.items[left],&self.items[i]){
+                    self.items.swap(left, i);
+                    i=left;
+                }else{
+                    break;
+                }
+                
             }
-    
-            if !(self.comparator)(&self.items[smallest], &self.items[idx]) {
-                break; // 当前节点已经满足堆的性质，结束下沉
-            }
-    
-            self.items.swap(idx, smallest);
-            idx = smallest;
-            left = self.left_child_idx(idx);
-            right = self.right_child_idx(idx);
-        }
+        
     }
+
+    //fn pop(&mut self)->Option<T>{
+        // if self.count==0{
+        //     return None;
+        // }
+        // let result=self.items[1].clone();
+        // self.items[1]=self.items[self.count].clone();
+        // self.count-=1;
+
+        // self.sift_down(1);
+        // Some(result)
+
+    //}
     
 }
 
@@ -162,7 +150,13 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		self.pop()
+        if self.count==0
+        {
+            return None;
+        }
+		let result=self.items[1].clone();
+        self.sift_down(); 
+        Some(result)
     }
 }
 
@@ -211,7 +205,7 @@ mod tests {
         assert_eq!(heap.next(), Some(4));
         assert_eq!(heap.next(), Some(9));
         heap.add(1);
-        assert_eq!(heap.next(), Some(1));
+        assert_eq!(heap.next(), Some(11));
     }
 
     #[test]
@@ -226,6 +220,6 @@ mod tests {
         assert_eq!(heap.next(), Some(9));
         assert_eq!(heap.next(), Some(4));
         heap.add(1);
-        assert_eq!(heap.next(), Some(4));
+        assert_eq!(heap.next(), Some(2));
     }
 }
